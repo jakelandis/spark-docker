@@ -26,4 +26,17 @@
     <name>yarn.nodemanager.remote-app-log-dir</name>
     <value>/tmp/logs</value>
   </property>
+    <!-- Default 8GB -->
+<property>
+  <description>Max available memory on each data node.</description>
+  <name>yarn.nodemanager.resource.memory-mb</name>
+  <value>16384</value>
+</property>
+
+<!-- Default 8. -->
+<property>
+  <description>Max available cores data node.</description>
+  <name>yarn.nodemanager.resource.cpu-vcores</name>
+  <value>16</value>
+</property>
 </configuration>

@@ -15,8 +15,14 @@ make build_slave_image
 
 Now we can build a cluster with for intance 3 slaves, the following command must be used:
 ```
-docker-compose up   --scale slave=3
+docker-compose up --scale slave=3
 ```  
+# Add spark-master to /etc/hosts
+
+On local machine (not sure why the docker compose entries dont work?):
+```
+127.0.0.1	localhost spark-master
+```
 
 # Spark and YARN UIs
 Spark and YARN expose web UI used to track the execution of the applications:
@@ -36,10 +42,31 @@ Shared repositories can be used to, for example, put the JAR executed with spark
 # Tests
 To verify that the cluster was correctly installed, launch _SparkPi_ example:
 ```
-spark-submit --class org.apache.spark.examples.SparkPi --master yarn --deploy-mode cluster --driver-memory 1g --executor-memory 1g --executor-cores 1 ~/spark-2.1.0-bin-hadoop2.7/examples/jars/spark-examples*.jar 1000
+docker  exec -it spark-docker_master_1  bash
+
+spark-submit --class co.elastic.sample.spark.Test1 --conf spark.es.nodes=elasticsearch  --master yarn --deploy-mode cluster --driver-memory 1g --executor-memory 1g --executor-cores 3 --jars ~/shared/*.jar
+
+spark-submit --class co.elastic.sample.spark.Test1 --conf spark.es.nodes=elasticsearch  --master yarn --deploy-mode cluster --driver-memory 1g --executor-memory 1g --executor-cores 3 --jars ~/shared/*.jar
+
 ```
 
 # Troubleshooting
+
+```
+docker  exec -it spark-docker_master_1  bash
+
+spark-submit --class org.apache.spark.examples.SparkPi --master yarn --deploy-mode cluster --driver-memory 1g --executor-memory 1g --executor-cores 1 ~/spark-2.1.0-bin-hadoop2.7/examples/jars/spark-examples*.jar 1000
+```
+
+```
+docker-compose up # only a single slave
+docker  exec -it spark-docker_slave_1  bash
+cd /home/sparker/hadoop-2.7.3/bin
+./yarn logs -applicationId application_1607566675933_0001
+```
+
+
+
 ## "Unhealthy Node local-dirs and log-dirs"
 I encounter the issue when I had too few available disk space. It makes that the slave nodes are detected as unhealthy. You can fix that either by playing with the configuration 
 https://stackoverflow.com/questions/29131449/why-does-hadoop-report-unhealthy-node-local-dirs-and-log-dirs-are-bad or simply by ensuring that you have enough free disk space.

@@ -16,6 +16,7 @@ services:
   slave:
     ports:
       - "7177"
+      - "8042"
     environment:
        - "script=run_slave.sh"
     networks:
@@ -27,6 +28,41 @@ services:
     depends_on:
     -  master
     image: "spark_compose_slave:latest"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    container_name: elasticsearch
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # - ELASTIC_PASSWORD=foobar
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml  
+    networks:
+      - spark-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.0
+    container_name: kibana
+    # environment:
+     # ELASTICSEARCH_URL: http://elasticsearch:9200
+    #  ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      # - XPACK_SECURITY_ENABLED=true
+      # - ELASTICSEARCH_USERNAME=elastic
+      # - ELASTICSEARCH_PASSWORD=foobar
+    ports:
+      - "5601:5601"
+    networks:
+      - spark-network
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml      
+    depends_on:
+      - elasticsearch
+ 
 networks:
   spark-network:
     driver: bridge
