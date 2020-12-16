@@ -44,7 +44,7 @@ To verify that the cluster was correctly installed, launch _SparkPi_ example:
 ```
 docker  exec -it spark-docker_master_1  bash
 
-spark-submit --class co.elastic.sample.spark.Test1 --conf spark.es.nodes=elasticsearch  --master yarn --deploy-mode cluster --driver-memory 1g --executor-memory 1g --executor-cores 3 --jars ~/shared/*.jar
+spark-submit --class co.elastic.sample.spark.Test1 --conf spark.es.nodes=elasticsearch  --master yarn --deploy-mode cluster --driver-memory 1g --executor-memory 1g --num-executors 3 --executor-cores 3 --jars ~/shared/*.jar
 
 spark-submit --class co.elastic.sample.spark.Test1 --conf spark.es.nodes=elasticsearch  --master yarn --deploy-mode cluster --driver-memory 1g --executor-memory 1g --executor-cores 3 --jars ~/shared/*.jar
 
@@ -56,6 +56,7 @@ spark-submit --class co.elastic.sample.spark.Test1 --conf spark.es.nodes=elastic
 docker  exec -it spark-docker_master_1  bash
 
 spark-submit --class org.apache.spark.examples.SparkPi --master yarn --deploy-mode cluster --driver-memory 1g --executor-memory 1g --executor-cores 1 ~/spark-2.1.0-bin-hadoop2.7/examples/jars/spark-examples*.jar 1000
+
 ```
 
 ```
@@ -65,6 +66,14 @@ cd /home/sparker/hadoop-2.7.3/bin
 ./yarn logs -applicationId application_1607566675933_0001
 ```
 
+Get local IP 
+```
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' spark-docker_slave_1
+```
+Get local logs
+```
+docker logs -f elasticsearch 
+```
 
 
 ## "Unhealthy Node local-dirs and log-dirs"
